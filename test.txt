@@ -1,0 +1,8 @@
+
+
+learn get_val {
+    return 5
+}
+
+$a = get_val
+print $a
