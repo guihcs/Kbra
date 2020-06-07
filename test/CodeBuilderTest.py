@@ -6,24 +6,17 @@ class MyTestCase(unittest.TestCase):
 
     def test_something(self):
         script = """
-                    $a = 1        
-
-
-
+                    $a = 1  + 1      
+                    
                     if $a > 2 {
-
-
+                    
                         print($a)
-
-
-                        print($b)
-
+                        
+                        print($b + 1)
 
                         if $b < 3 {
 
-
-                            pow($c, 2)
-
+                            pow($c + 1, 2 + 2)
 
                         }
 
@@ -46,7 +39,8 @@ class MyTestCase(unittest.TestCase):
                 """
 
         res = buildCode(script)
-
+        for line, re in zip(range(len(res)), res):
+            print(f'{line} : {re}')
 
 if __name__ == '__main__':
     unittest.main()
