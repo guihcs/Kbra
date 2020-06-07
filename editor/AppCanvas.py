@@ -128,7 +128,7 @@ class AppCanvas(object):
     # Turn left with the angle _dir
     def turn(self, _dir):
         self.__cur_dir = self.__cur_dir + _dir
-        # self.set_sprite_dir(self.__cur_dir)
+        self.set_sprite_dir(self.__cur_dir)
 
     def set_line_width(self, width):
         self.line_width = width[0]

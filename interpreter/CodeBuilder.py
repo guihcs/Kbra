@@ -16,7 +16,6 @@ def buildCode(script):
     code = parser.parse(script, lexer=lexer)
 
     buildStatements(code)
-    print('---------')
     return resultCode
 
 
@@ -71,7 +70,7 @@ def buildTerm(term):
     elif term[0] == 'ID':
         writeCode(('PUSH', 'ID', term[1]))
     elif term[0] == 'OPERATOR':
-        writeCode(stack_functions[term[1]])
+        writeCode((stack_functions[term[1]], ))
     elif term[0] == 'FUNCTION':
         buildFunctionCall(term[1], term[2])
 

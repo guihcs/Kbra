@@ -1,9 +1,6 @@
 import ply.lex as lex
 
 reserved = {
-    'fw',
-    'tl',
-    'tr',
     'while',
     'if',
     'repeat'

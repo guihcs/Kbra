@@ -6,36 +6,11 @@ class MyTestCase(unittest.TestCase):
 
     def test_something(self):
         script = """
-                    $a = 1  + 1      
-                    
-                    if $a > 2 {
-                    
-                        print($a)
-                        
-                        print($b + 1)
-
-                        if $b < 3 {
-
-                            pow($c + 1, 2 + 2)
-
-                        }
-
-                    }
-
-                    if $c > 4 {
-
-                        $a = 2
-
-                        print($a)            
-                    }
-
-                    $i = 0
-
-                    while $i < 3 {
-
-                        $i = $i + 1
-
-                    }
+                $i = 0
+                $res = 0
+                while $i < 3 {
+                    $res = $res + $i            
+                }
                 """
 
         res = buildCode(script)
