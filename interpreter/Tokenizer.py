@@ -23,7 +23,7 @@ tokens = (
     'FUNCTION',
     'OB',
     'CB',
-    'ATTRIBUTION',
+    'ASSIGN',
     'COMMA',
     'PLUS',
     'MINUS',
@@ -34,11 +34,11 @@ tokens = (
 )
 
 
-def t_KEYWORD(t):
-    r'[a-z]+'
-    if t in reserved:
-        return t
-    return None
+def t_FUNCTION(t):
+    r'[a-zA-Z][a-zA-Z0-9]*'
+    if t.value in reserved:
+        t.type = 'KEYWORD'
+    return t
 
 
 t_ID = r'\$[a-zA-Z0-9]+'
@@ -66,10 +66,9 @@ t_LOGIC_OP = r'not|and|or'
 t_LP = r'\('
 t_RP = r'\)'
 t_LEARN = r'learn'
-t_FUNCTION = r'[a-zA-Z][a-zA-Z0-9]*'
 t_OB = r'{'
 t_CB = r'}'
-t_ATTRIBUTION = r'='
+t_ASSIGN = r'='
 t_COMMA = r','
 t_PLUS = r'\+'
 t_MINUS = r'-'
@@ -79,7 +78,7 @@ t_NL = r'[\n]+'
 
 
 def t_EMPTY(t):
-    r'[ \t]+'
+    r'[ \t\r]+'
 
     pass
 

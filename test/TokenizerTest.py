@@ -1,12 +1,47 @@
 import unittest
 from interpreter.Tokenizer import lexer
 
+
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         script = """
-                    $a = 1 + 1 * 2
-                    $b = 2 * 2
-                    $c = $a + $b
+                    $a = 1        
+                    
+                    
+                       
+                    if $a > 2 {
+                    
+                    
+                        print($a)
+                        
+                        
+                        print($b)
+                        
+                        
+                        if $b < 3 {
+                        
+                        
+                            print($c)
+                            
+                            
+                        }
+                        
+                    }
+
+                    if $c > 4 {
+                    
+                        $a = 1
+                        
+                        print($a)            
+                    }
+
+                    $i = 0
+                    
+                    while $i < 3 {
+                    
+                        $i = $i + 1
+                        
+                    }
                 """
         lexer.input(script)
         while True:
