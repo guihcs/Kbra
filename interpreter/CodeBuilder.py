@@ -1,101 +1,87 @@
 from interpreter.Parser import parser
 from interpreter.Tokenizer import lexer
 
-resultCode = []
-
+result_declarations = []
+result_code = []
+symbol_table = {}
+current_symbol = [0]
 current_line = [0]
-
-stack_functions = {
-    '+': 'ADD',
-    '>': 'GT',
-    '<': 'LT'
-}
+building_function = False
 
 
-def buildCode(script):
+def append_code(code):
+    current_line[0] += 1
+    result_code.append(code)
+
+
+def replace_code(line, code):
+    result_code[line] = code
+
+
+def get_current_line():
+    return current_line[0]
+
+
+def build_code(script):
     code = parser.parse(script, lexer=lexer)
 
-    buildStatements(code)
-    return resultCode
+    build_statements(code)
+    print(symbol_table)
+    return result_code
 
 
-def buildStatements(statements):
+def build_statements(statements):
     for statement in statements:
-        buildInstruction(statement)
+        build_instruction(statement)
 
 
-def buildInstruction(instruction):
-    if instruction[0] == 'ASSIGN':
-        buildAssignment(instruction[1], instruction[2])
-    elif instruction[0] == 'BRANCH':
-        buildBranch(instruction[1], instruction[2], instruction[3])
-    elif instruction[0] == 'FUNCTION':
-        buildFunctionCall(instruction[1], instruction[2])
+def build_instruction(instruction):
+    function_map = {
+        'LEARN': build_learn,
+        'ASSIGN': build_assignment,
+        'BRANCH': build_branch,
+        'LOOP': build_loop,
+        'FUNCTION': build_function_call
+    }
+
+    function_map[instruction[0]](*instruction[1:])
 
 
-def buildAssignment(address, expression):
-    buildExpression(expression)
-    writeCode(('POP', address[1]))
+def build_learn():
     pass
 
 
-def buildBranch(key, expression, statements):
-    expression_start = getCurrentLine()
-    buildExpression(expression)
-    curline = getCurrentLine()
-    writeCode((key,))
-    buildStatements(statements)
+def build_assignment(address, expression):
+    if address[1] not in symbol_table:
+        symbol_table[address[1]] = current_symbol[0]
+        current_symbol[0] += 1
 
-    if key == 'while':
-        writeCode(('JUMP', expression_start))
-
-    replaceCode(curline, ('JUMP_NOT', getCurrentLine()))
-
+    symbol_address = symbol_table[address[1]]
+    build_expression(expression)
+    append_code(('POP', 'ID', symbol_address))
     pass
 
 
-def buildExpression(expression):
-    if len(expression) < 3:
-        buildTerm(expression)
-        pass
-    else:
-        for term in expression:
-            buildTerm(term)
-            pass
+def build_expression(expression):
+
+    for term in expression:
+
+        if term[0] == 'CONSTANT':
+            append_code(('PUSH', 'CONSTANT', term[1]))
+        elif term[0] == 'ID':
+            append_code(('PUSH', 'ID', symbol_table[term[1]]))
+        elif term[0] == 'OP':
+            append_code((term[1],))
+    pass
 
 
-def buildTerm(term):
-    if term[0] == 'CONSTANT':
-        writeCode(('PUSH', 'CONSTANT', term[1]))
-    elif term[0] == 'ID':
-        writeCode(('PUSH', 'ID', term[1]))
-    elif term[0] == 'OPERATOR':
-        writeCode((stack_functions[term[1]], ))
-    elif term[0] == 'FUNCTION':
-        buildFunctionCall(term[1], term[2])
+def build_branch():
+    pass
 
 
-def buildFunctionCall(function, args):
-    if len(args) < 2:
-        buildExpression(args[0])
-    else:
-        for arg in args:
-            if len(arg) == 1:
-                buildExpression(arg[0])
-            else:
-                buildExpression(arg)
-
-    writeCode(('CALL', function))
+def build_loop():
+    pass
 
 
-def writeCode(code):
-    current_line[0] += 1
-    resultCode.append(code)
-
-
-def replaceCode(line, code):
-    resultCode[line] = code
-
-
-def getCurrentLine():
-    return current_line[0]
+def build_function_call():
+    pass

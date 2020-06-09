@@ -1,22 +1,31 @@
 import ply.lex as lex
 
 reserved = {
-    'while',
-    'if',
-    'repeat'
+    'break': 'BREAK',
+    'exit': 'EXIT',
+    'assert': 'ASSERT',
+    'return': 'RETURN',
+    'if': 'IF',
+    'elif': 'ELIF',
+    'else': 'ELSE',
+    'for': 'FOR',
+    'while': 'WHILE',
+    'repeat': 'REPEAT',
+    'to': 'TO',
+    'learn': 'LEARN',
+    'and': 'AND',
+    'or': 'OR',
+    'not': 'NOT'
 }
 
 tokens = (
-    'KEYWORD',
     'ID',
     'NUMBER',
     'BOOLEAN',
     'STRING',
     'REL_OP',
-    'LOGIC_OP',
     'LP',
     'RP',
-    'LEARN',
     'FUNCTION',
     'OB',
     'CB',
@@ -27,14 +36,26 @@ tokens = (
     'TIMES',
     'DIVIDE',
     'NL',
-    'EMPTY'
+    'EMPTY',
+    'COMMENT',
+    'LEARN',
+    'IF',
+    'ELIF',
+    'ELSE',
+    'WHILE',
+    'REPEAT',
+    'FOR',
+    'TO',
+    'OR',
+    'AND',
+    'NOT'
 )
 
 
 def t_FUNCTION(t):
-    r'[a-zA-Z][a-zA-Z0-9]*'
+    r"""[a-zA-Z][a-zA-Z0-9]*"""
     if t.value in reserved:
-        t.type = 'KEYWORD'
+        t.type = reserved[t.value]
     return t
 
 
@@ -42,13 +63,13 @@ t_ID = r'\$[a-zA-Z0-9]+'
 
 
 def t_NUMBER(t):
-    r'\d+(\.\d+)?'
+    r"""\d+(\.\d+)?"""
     t.value = int(t.value)
     return t
 
 
 def t_BOOLEAN(t):
-    r'true|false'
+    r"""true|false"""
     if t.value == 'true':
         t.value = True
     else:
@@ -57,12 +78,15 @@ def t_BOOLEAN(t):
     return t
 
 
-t_STRING = r'".+"'
+def t_STRING(t):
+    r"""".+\""""
+    t.value = t.value[1:-1]
+    return t
+
+
 t_REL_OP = r'==|>=|<=|!=|>|<'
-t_LOGIC_OP = r'not|and|or'
 t_LP = r'\('
 t_RP = r'\)'
-t_LEARN = r'learn'
 t_OB = r'{'
 t_CB = r'}'
 t_ASSIGN = r'='
@@ -74,8 +98,14 @@ t_DIVIDE = r'/'
 t_NL = r'[\n]+'
 
 
-def t_EMPTY(t):
-    r'[ \t\r]+'
+def t_COMMENT(_):
+    r"""\#[^\n]+"""
+
+    pass
+
+
+def t_EMPTY(_):
+    r"""[ \t\r]+"""
 
     pass
 
