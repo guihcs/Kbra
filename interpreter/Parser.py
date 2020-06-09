@@ -3,8 +3,6 @@ import ply.yacc as yacc
 # noinspection PyUnresolvedReferences
 from interpreter.Tokenizer import tokens
 
-scope_stack = [[]]
-
 stack_functions = {
     '+': 'ADD',
     '*': 'MULT',
@@ -17,6 +15,16 @@ stack_functions = {
     '==': 'EQ',
     '!=': 'NEQ'
 }
+
+precedence = (
+    ('left', 'OR'),
+    ('left', 'AND'),
+    ('left', 'REL_OP'),
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'TIMES', 'DIVIDE'),
+)
+
+scope_stack = [[]]
 
 
 def appendCode(code):
@@ -34,18 +42,11 @@ def popScope():
     pass
 
 
-precedence = (
-    ('left', 'OR'),
-    ('left', 'AND'),
-    ('left', 'REL_OP'),
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE'),
-)
-
-
 def p_start(p):
     """start : declarations"""
+    global scope_stack
     p[0] = scope_stack[0]
+    scope_stack = [[]]
     pass
 
 
@@ -99,11 +100,7 @@ def p_assign(p):
 def p_branching(p):
     """branching : IF logic scope OB statements CB post_scope chain"""
 
-    appendCode(('IF', p[2], p[7]))
-
-    if p[8]:
-        for chain in p[8]:
-            appendCode(chain)
+    appendCode(('IF', p[2], p[7], p[8]))
 
 
 def p_scope(_):
@@ -175,7 +172,7 @@ def p_logic(p):
              | expression
     """
     if len(p) < 3:
-        p[0] = p[1]
+        p[0] = (p[1],)
     else:
         p[0] = (p[1], p[3], ('OP', p[2]))
     pass

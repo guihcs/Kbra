@@ -1,4 +1,5 @@
 import unittest
+
 from interpreter.Parser import parser
 from interpreter.Tokenizer import lexer
 
@@ -12,9 +13,9 @@ class TestAssignment(unittest.TestCase):
         """
         result = parser.parse(script, lexer=lexer)
 
-        self.assertEqual(('ASSIGN', ('ID', '$a'), ('CONSTANT', 1)), result[0])
-        self.assertEqual(('ASSIGN', ('ID', '$b'), ('CONSTANT', 2)), result[1])
-        self.assertEqual(('ASSIGN', ('ID', '$c'), (('ID', '$a'), ('ID', '$b'), ('OP', 'ADD'))), result[2])
+        self.assertEqual(('ASSIGN', ('ID', '$a'), (('CONSTANT', 1),)), result[0])
+        self.assertEqual(('ASSIGN', ('ID', '$b'), (('CONSTANT', 2),)), result[1])
+        self.assertEqual(('ASSIGN', ('ID', '$c'), ((('ID', '$a'), ('ID', '$b'), ('OP', 'ADD')),)), result[2])
 
 
 class TestBranching(unittest.TestCase):
@@ -29,10 +30,6 @@ class TestBranching(unittest.TestCase):
                     }
                 """
         result = parser.parse(script, lexer=lexer)
-
-        self.assertEqual('IF', result[0][0])
-        self.assertEqual('ELIF', result[1][0])
-        self.assertEqual('ELSE', result[2][0])
 
 
 class TestLoop(unittest.TestCase):
@@ -68,12 +65,23 @@ class TestLoop(unittest.TestCase):
 
 class TestFunction(unittest.TestCase):
     def test_function(self):
-
+        script = """
+                    print("test")
+                """
+        result = parser.parse(script, lexer=lexer)
+        self.assertEqual('CALL', result[0][0])
         pass
 
 
 class TestLearn(unittest.TestCase):
     def test_learn(self):
+        script = """
+                    learn test $a {
+                        print($a)
+                    }
+                """
+        result = parser.parse(script, lexer=lexer)
+        self.assertEqual('LEARN', result[0][0])
         pass
 
 
