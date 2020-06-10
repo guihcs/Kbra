@@ -95,6 +95,9 @@ class TestLoop(unittest.TestCase):
                         """
         result = build_code(script)
 
+        for i, c in zip(range(len(result)), result):
+            print(f'{i} : {c}')
+
     def test_repeat(self):
         script = """
                     repeat 20 {
@@ -102,6 +105,8 @@ class TestLoop(unittest.TestCase):
                     }
                 """
         result = build_code(script)
+        for i, c in zip(range(len(result)), result):
+            print(f'{i} : {c}')
 
     def test_for(self):
         script = """
@@ -110,6 +115,8 @@ class TestLoop(unittest.TestCase):
                     }
                 """
         result = build_code(script)
+        for i, c in zip(range(len(result)), result):
+            print(f'{i} : {c}')
 
 
 class TestFunction(unittest.TestCase):

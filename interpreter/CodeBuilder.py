@@ -97,7 +97,7 @@ def flat_tuple(t):
 
 
 def build_expression(expression):
-    expression = flat_tuple(expression)
+    expression = flat_tuple(expression) if type(expression[0]) is tuple else (expression, )
 
     for term in expression:
         if term[0] == 'CONSTANT':
@@ -116,6 +116,7 @@ def label(label):
 def build_if(condition, statements, chain):
     build_expression(condition)
     if_label = label('endif')
+
     append_code(('JUMPNOT', if_label))
     build_statements(statements)
     append_code(('LABEL', if_label))
@@ -126,46 +127,34 @@ def build_if(condition, statements, chain):
 
 
 def build_elif(condition, statements, chain, data):
-    if chain:
-        if chain[0] == 'ELSE':
-            end_label = pop_code()
-            append_code(('JUMP', data))
-            append_code(end_label)
-            build_expression(condition)
-            elif_label = label('endelif')
-            append_code(('JUMPNOT', elif_label))
-            build_statements(statements)
-            append_code(('LABEL', elif_label))
-            build_else(chain[1], data)
-            pass
-        else:
-            end_label = pop_code()
-            append_code(('JUMP', data))
-            append_code(end_label)
-            build_expression(condition)
-            elif_label = label('endelif')
-            append_code(('JUMPNOT', elif_label))
-            build_statements(statements)
-            append_code(('LABEL', elif_label))
-            build_elif(chain[0][1], chain[0][2], chain[1], data)
-            pass
+    inject_jump_label(data)
 
+    build_expression(condition)
+
+    elif_label = label('endelif') if chain else data
+
+    append_code(('JUMPNOT', elif_label))
+    build_statements(statements)
+    append_code(('LABEL', elif_label))
+
+    if chain[0] == 'ELSE':
+        build_else(chain[1], data)
+        pass
     else:
-        end_label = pop_code()
-        append_code(('JUMP', data))
-        append_code(end_label)
-        build_expression(condition)
-        elif_label = data
-        append_code(('JUMPNOT', elif_label))
-        build_statements(statements)
-        append_code(('LABEL', elif_label))
+        build_elif(chain[0][1], chain[0][2], chain[1], data)
+        pass
     pass
 
 
-def build_else(statements, data):
+def inject_jump_label(data):
     end_label = pop_code()
     append_code(('JUMP', data))
     append_code(end_label)
+
+
+def build_else(statements, data):
+    inject_jump_label(data)
+
     elif_label = data
     build_statements(statements)
     append_code(('LABEL', elif_label))
@@ -173,14 +162,51 @@ def build_else(statements, data):
 
 
 def build_while(condition, statements):
+    start_label = label('loop-start')
+    end_label = label('loop-end')
+    append_code(('LABEL', start_label))
+    build_expression(condition)
+    append_code(('JUMPNOT', end_label))
+    build_statements(statements)
+    append_code(('JUMP', start_label))
+    append_code(('LABEL', end_label))
     pass
 
 
 def build_repeat(expression, statements):
+    append_code(('PUSH', 'CONSTANT', 0))
+    append_code(('POP', 'ID', '_ti'))
+    build_expression(expression)
+    append_code(('POP', 'ID', '_te'))
+    start_repeat = label('start-repeat')
+    end_repeat = label('end-repeat')
+
+    append_code(('LABEL', start_repeat))
+    append_code(('PUSH', 'ID', '_ti'))
+    build_buffer_loop(end_repeat, start_repeat, statements)
     pass
 
 
+def build_buffer_loop(end_repeat, start_repeat, statements):
+    append_code(('PUSH', 'ID', '_te'))
+    append_code(('LT',))
+    append_code(('JUMPNOT', end_repeat))
+    build_statements(statements)
+    append_code(('JUMP', start_repeat))
+    append_code(('LABEL', end_repeat))
+
+
 def build_for(assign, expression, statements):
+    build_assignment(assign[1], assign[2])
+    build_expression(expression)
+    append_code(('POP', 'ID', '_te'))
+    start_repeat = label('start-repeat')
+    end_repeat = label('end-repeat')
+
+    append_code(('LABEL', start_repeat))
+    append_code(('PUSH', 'ID', assign[1][1]))
+    build_buffer_loop(end_repeat, start_repeat, statements)
+
     pass
 
 
