@@ -18,22 +18,32 @@ class AppCanvas(object):
         self.line_width = 1
         self.line_color = '#000000'
 
-        self.functions = {
-            'line': self.draw_line,
-            'turn': self.turn,
-            'getdir': self.get_dir,
-            'dir': self.set_dir,
-            'center': self.center,
-            'go': self.set_pos,
-            'getx': self.get_current_x,
-            'gety': self.get_current_y,
-            'draw': self.set_draw,
-            'pw': self.set_line_width,
-            'pc': self.set_line_color,
-            'cc': self.set_bg,
-            'clear': self.clear,
-            'reset': self.reset,
-            'print': self.draw_text
+        self.library = {
+            'fw': (1, self.draw_line),
+            'bw': (1, lambda l: self.draw_line(-l)),
+            'tl': (1, self.turn),
+            'tr': (1, lambda a: self.turn(-a)),
+            'dir': (1, self.set_dir),
+            'getdir': (0, self.get_dir),
+            'center': (0, self.center),
+            'go': (2, self.set_pos),
+            'gx': (1, lambda x: self.set_pos(x, self.canvas['gety']())),
+            'gy': (1, lambda y: self.set_pos(self.canvas['gety'](), y)),
+            'getx': (0, self.get_current_x),
+            'gety': (0, self.get_current_y),
+            'pu': (0, self.set_draw(False)),
+            'pd': (0, self.set_draw(True)),
+            'pw': (1, self.set_line_width),
+            'pc': (3, self.set_line_color),
+            # 'cs': (2, self.canvas['pc']),
+            'cc': (3, self.set_bg),
+            'clear': (0, self.clear),
+            'reset': (0, self.reset),
+            # 'ss': (0, self.reset),
+            # 'sh': (0, self.reset),
+            'print': (1, self.draw_text),
+            # 'fontsize': (1, self.canvas['print']),
+
         }
 
         self.canvas = Canvas(root, width=self.__canv_width, height=self.__canv_height, bg='white', borderwidth=2,

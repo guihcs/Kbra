@@ -225,7 +225,7 @@ def build_for(assign, expression, statements):
 
 
 def build_function_call(function_name, args):
-    append_code(('PUSH', 'CONSTANT', 0))
+    append_code(('PUSH', 'REGISTER', 0))
     for arg in args:
         build_expression(arg)
 
