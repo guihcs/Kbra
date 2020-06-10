@@ -2,6 +2,7 @@ import ply.lex as lex
 
 reserved = {
     'break': 'BREAK',
+    'continue': 'CONTINUE',
     'exit': 'EXIT',
     'assert': 'ASSERT',
     'return': 'RETURN',
@@ -20,6 +21,8 @@ reserved = {
 
 tokens = (
     'ID',
+    'BREAK',
+    'CONTINUE',
     'NUMBER',
     'BOOLEAN',
     'STRING',
@@ -48,7 +51,9 @@ tokens = (
     'TO',
     'OR',
     'AND',
-    'NOT'
+    'NOT',
+    'RETURN',
+
 )
 
 

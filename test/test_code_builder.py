@@ -95,8 +95,8 @@ class TestLoop(unittest.TestCase):
                         """
         result = build_code(script)
 
-        for i, c in zip(range(len(result)), result):
-            print(f'{i} : {c}')
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
 
     def test_repeat(self):
         script = """
@@ -105,8 +105,8 @@ class TestLoop(unittest.TestCase):
                     }
                 """
         result = build_code(script)
-        for i, c in zip(range(len(result)), result):
-            print(f'{i} : {c}')
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
 
     def test_for(self):
         script = """
@@ -115,29 +115,49 @@ class TestLoop(unittest.TestCase):
                     }
                 """
         result = build_code(script)
-        for i, c in zip(range(len(result)), result):
-            print(f'{i} : {c}')
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
 
 
 class TestFunction(unittest.TestCase):
     def test_function(self):
         script = """
-                    print("test")
+                    $a = add(1 + 1, 2)
+                    print($b)
                 """
         result = build_code(script)
-
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
         pass
 
 
 class TestLearn(unittest.TestCase):
     def test_learn(self):
         script = """
-                    learn test $a {
-                        print($a)
+                    learn test $a, $b {
+                        $a = 1 + 1
+                        $b = 2 
+                        $c = 3                      
                     }
+
+                    $i = 0
                 """
         result = build_code(script)
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
+        pass
 
+    def test_learn_call(self):
+        script = """
+                    learn add $a, $b {
+                        return $a + $b                  
+                    }
+
+                    $i = add(1, 2)
+                """
+        result = build_code(script)
+        for i, c in zip(range(len(result)), result):
+            print(f'{i} : {c}')
         pass
 
 

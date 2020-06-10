@@ -27,7 +27,7 @@ precedence = (
 scope_stack = [[]]
 
 
-def appendCode(code):
+def append_code(code):
     scope_stack[-1].append(code)
 
 
@@ -66,12 +66,13 @@ def p_statements(_):
                   | branching declarations
                   | loop declarations
                   | function declarations
+                  | return declarations
     """
 
 
 def p_learn(p):
     """learn : LEARN FUNCTION params scope OB statements CB post_scope"""
-    appendCode(('LEARN', p[2], p[3], p[8]))
+    append_code(('LEARN', p[2], p[3], p[8]))
     pass
 
 
@@ -88,7 +89,7 @@ def p_params(p):
 
 def p_assignment(p):
     """assignment : assign"""
-    appendCode(p[1])
+    append_code(p[1])
     pass
 
 
@@ -100,7 +101,7 @@ def p_assign(p):
 def p_branching(p):
     """branching : IF logic scope OB statements CB post_scope chain"""
 
-    appendCode(('IF', p[2], p[7], p[8]))
+    append_code(('IF', p[2], p[7], p[8]))
 
 
 def p_scope(_):
@@ -153,17 +154,17 @@ def p_loop(_):
 
 def p_while(p):
     """while : WHILE expression scope OB statements CB post_scope"""
-    appendCode(('WHILE', p[2], p[7]))
+    append_code(('WHILE', p[2], p[7]))
 
 
 def p_repeat(p):
     """repeat : REPEAT expression scope OB statements CB post_scope"""
-    appendCode(('REPEAT', p[2], p[7]))
+    append_code(('REPEAT', p[2], p[7]))
 
 
 def p_for(p):
     """for : FOR assign TO expression scope OB statements CB post_scope"""
-    appendCode(('FOR', p[2], p[4], p[9]))
+    append_code(('FOR', p[2], p[4], p[9]))
 
 
 def p_logic(p):
@@ -220,7 +221,7 @@ def p_id(p):
 def p_function(p):
     """function : FUNCTION LP args RP"""
 
-    appendCode(('CALL', p[1], p[3]))
+    append_code(('CALL', p[1], p[3]))
 
 
 def p_args(p):
@@ -232,6 +233,12 @@ def p_args(p):
         p[0] = p[1]
     else:
         p[0] = (p[1], p[3])
+    pass
+
+
+def p_return(p):
+    """return : RETURN logic"""
+    append_code(('RET', p[2]))
     pass
 
 

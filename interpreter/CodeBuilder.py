@@ -1,27 +1,29 @@
 from interpreter.Parser import parser
 from interpreter.Tokenizer import lexer
 
-result_declarations = []
 result_code = []
-symbol_table = {}
-current_symbol = [0]
 current_line = [0]
-building_function = False
+def_map = {}
 
 
 def reset():
-    global result_declarations
-    result_declarations = []
     global result_code
-    global symbol_table
-    global current_symbol
     global current_line
-    global building_function
     result_code = []
-    symbol_table = {}
-    current_symbol = [0]
     current_line = [0]
-    building_function = False
+
+
+def get_state():
+    global result_code
+    global current_line
+    return result_code, current_line
+
+
+def set_state(state):
+    global result_code
+    global current_line
+    result_code = state[0]
+    current_line = state[1]
 
 
 def append_code(code):
@@ -63,21 +65,25 @@ def build_instruction(instruction):
         'WHILE': build_while,
         'REPEAT': build_repeat,
         'FOR': build_for,
-        'CALL': build_function_call
+        'CALL': build_function_call,
+        'RET': build_return,
     }
 
     function_map[instruction[0]](*instruction[1:])
 
 
 def build_learn(function, args, statements):
+    state = get_state()
+    reset()
+    def_label = label(f'def-{function}')
+    append_code(('LABEL', def_label))
+    build_statements(statements)
+    def_map[function] = [False, def_label, args, result_code]
+    set_state(state)
     pass
 
 
 def build_assignment(address, expression):
-    if address[1] not in symbol_table:
-        symbol_table[address[1]] = current_symbol[0]
-        current_symbol[0] += 1
-
     build_expression(expression)
     append_code(('POP', 'ID', address[1]))
     pass
@@ -97,7 +103,7 @@ def flat_tuple(t):
 
 
 def build_expression(expression):
-    expression = flat_tuple(expression) if type(expression[0]) is tuple else (expression, )
+    expression = flat_tuple(expression) if type(expression[0]) is tuple else (expression,)
 
     for term in expression:
         if term[0] == 'CONSTANT':
@@ -109,8 +115,8 @@ def build_expression(expression):
     pass
 
 
-def label(label):
-    return f'#{label}-{get_current_line()}'
+def label(lab):
+    return f'#{lab}-{get_current_line()}'
 
 
 def build_if(condition, statements, chain):
@@ -210,5 +216,18 @@ def build_for(assign, expression, statements):
     pass
 
 
-def build_function_call(function, args):
+def build_function_call(function_name, args):
+    start_label = label('start-call')
+    append_code(('LABEL', start_label))
+    append_code(('PUSH', 'CONSTANT', 0))
+    for arg in args:
+        build_expression(arg)
+
+    append_code(('CALL', function_name, start_label))
+    pass
+
+
+def build_return(expression):
+    build_expression(expression)
+    append_code(('RET',))
     pass
