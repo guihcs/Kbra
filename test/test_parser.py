@@ -4,6 +4,17 @@ from interpreter.Parser import parser
 from interpreter.Tokenizer import lexer
 
 
+class TestExpression(unittest.TestCase):
+    def test_arg_function_call(self):
+        script = """
+            print(add(1, 2))
+        """
+        result = parser.parse(script, lexer=lexer)
+
+
+        pass
+
+
 class TestAssignment(unittest.TestCase):
     def test_assignment(self):
         script = """

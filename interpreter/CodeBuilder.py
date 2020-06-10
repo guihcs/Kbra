@@ -9,8 +9,10 @@ def_map = {}
 def reset():
     global result_code
     global current_line
+    global def_map
     result_code = []
     current_line = [0]
+    def_map = {}
 
 
 def get_state():
@@ -48,8 +50,9 @@ def build_code(script):
     code = parser.parse(script, lexer=lexer)
     build_statements(code)
     res = result_code
+    dm = def_map
     reset()
-    return res
+    return res, dm
 
 
 def build_statements(statements):
@@ -78,7 +81,10 @@ def build_learn(function, args, statements):
     def_label = label(f'def-{function}')
     append_code(('LABEL', def_label))
     build_statements(statements)
-    def_map[function] = [False, def_label, args, result_code]
+    args_map = {}
+    for i, a in zip(range(len(args)), args):
+        args_map[a] = i
+    def_map[function] = [False, def_label, args_map, result_code]
     set_state(state)
     pass
 
@@ -112,6 +118,8 @@ def build_expression(expression):
             append_code(('PUSH', 'ID', term[1]))
         elif term[0] == 'OP':
             append_code((term[1],))
+        elif term[0] == 'CALL':
+            build_function_call(term[1], term[2])
     pass
 
 
@@ -217,13 +225,11 @@ def build_for(assign, expression, statements):
 
 
 def build_function_call(function_name, args):
-    start_label = label('start-call')
-    append_code(('LABEL', start_label))
     append_code(('PUSH', 'CONSTANT', 0))
     for arg in args:
         build_expression(arg)
 
-    append_code(('CALL', function_name, start_label))
+    append_code(('CALL', function_name, len(args)))
     pass
 
 

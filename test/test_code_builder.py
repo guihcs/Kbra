@@ -8,7 +8,7 @@ class TestExpression(unittest.TestCase):
         script = """
                     $a = 1 + 1 * 2 + (1 + 1)       
                 """
-        result = build_code(script)
+        result, dm = build_code(script)
         self.assertEqual(('PUSH', 'CONSTANT', 1), result[0])
         self.assertEqual(('PUSH', 'CONSTANT', 1), result[1])
         self.assertEqual(('PUSH', 'CONSTANT', 2), result[2])
@@ -27,7 +27,7 @@ class TestAssignment(unittest.TestCase):
             $a = 1
             $b = 2          
         """
-        result = build_code(script)
+        result, dm = build_code(script)
         self.assertEqual(('PUSH', 'CONSTANT', 1), result[0])
         self.assertEqual(('POP', 'ID', '$a'), result[1])
         self.assertEqual(('PUSH', 'CONSTANT', 2), result[2])
@@ -47,7 +47,7 @@ class TestBranching(unittest.TestCase):
                         $d = 6
                     }
                 """
-        result = build_code(script)
+        result, dm = build_code(script)
 
         correct_code = [
             ('PUSH', 'ID', '$a'),
@@ -93,7 +93,7 @@ class TestLoop(unittest.TestCase):
                         $i = $i + 1
                     }
                         """
-        result = build_code(script)
+        result, dm = build_code(script)
 
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
@@ -104,7 +104,7 @@ class TestLoop(unittest.TestCase):
                         $i = $i + 1
                     }
                 """
-        result = build_code(script)
+        result, dm = build_code(script)
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
 
@@ -114,7 +114,7 @@ class TestLoop(unittest.TestCase):
                         $i = $i + 1
                     }
                 """
-        result = build_code(script)
+        result, dm = build_code(script)
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
 
@@ -125,7 +125,7 @@ class TestFunction(unittest.TestCase):
                     $a = add(1 + 1, 2)
                     print($b)
                 """
-        result = build_code(script)
+        result, dm = build_code(script)
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
         pass
@@ -142,7 +142,7 @@ class TestLearn(unittest.TestCase):
 
                     $i = 0
                 """
-        result = build_code(script)
+        result, dm = build_code(script)
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
         pass
@@ -155,10 +155,28 @@ class TestLearn(unittest.TestCase):
 
                     $i = add(1, 2)
                 """
-        result = build_code(script)
-        for i, c in zip(range(len(result)), result):
-            print(f'{i} : {c}')
-        pass
+        result, dm = build_code(script)
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
+        # pass
+
+
+class TestComplexCode(unittest.TestCase):
+    def test_complex1(self):
+        script = """
+                learn add $a, $b {
+                    return $a + $b                  
+                }
+
+                $a = 1
+                $b = 2
+                print(add($a, $b))
+
+                    """
+        result, dm = build_code(script)
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
+        # pass
 
 
 if __name__ == '__main__':

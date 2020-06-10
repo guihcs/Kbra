@@ -60,12 +60,12 @@ def p_declarations(_):
     pass
 
 
-def p_statements(_):
+def p_statements(p):
     """statements : NL statements
                   | assignment declarations
                   | branching declarations
                   | loop declarations
-                  | function declarations
+                  | call declarations
                   | return declarations
     """
 
@@ -218,10 +218,15 @@ def p_id(p):
     p[0] = ('ID', p[1])
 
 
+def p_call(p):
+    """call : function"""
+    append_code(p[1])
+
+
 def p_function(p):
     """function : FUNCTION LP args RP"""
 
-    append_code(('CALL', p[1], p[3]))
+    p[0] = ('CALL', p[1], p[3])
 
 
 def p_args(p):

@@ -1,9 +1,11 @@
-from interpreter.CodeBuilder import buildCode
+from interpreter.CodeBuilder import build_code
+from interpreter.Linker import Linker
 
 
 class Interpreter:
 
     def __init__(self, canvas):
+        self.linker = Linker()
         self.canvas = canvas
         self.code = []
         self.stack = []
@@ -63,7 +65,8 @@ class Interpreter:
         pass
 
     def start(self, script):
-        self.code = buildCode(script)
+        result, dm = build_code(script)
+        self.code = self.linker.link(result, dm)
         self.currentLine = 0
         while self.currentLine < len(self.code):
             self.execute(self.code[self.currentLine])
@@ -76,50 +79,31 @@ class Interpreter:
         pass
 
     def push(self, code):
-        if code[1] == 'CONSTANT':
-            self.stack.append(code[2])
-        elif code[1] == 'ID':
-            value = self.var[code[2]]
-            self.stack.append(value)
+
         pass
 
     def pop(self, code):
-        self.var[code[1]] = self.stack.pop()
+
         pass
 
-    def add(self, code):
-        v1 = self.stack.pop()
-        v2 = self.stack.pop()
-        self.stack.append(v1 + v2)
+    def add(self, _):
+
         pass
 
-    def lt(self, code):
-        v2 = self.stack.pop()
-        v1 = self.stack.pop()
-        self.stack.append(v1 < v2)
+    def lt(self, _):
+
         pass
 
     def jump(self, code):
-        self.currentLine = code[1]-1
+
         pass
 
     def jump_not(self, code):
-        val = self.stack.pop()
-        if not val:
-            self.currentLine = code[1]
+
         pass
 
     def call(self, code):
-        if code[1] in self.library:
-            fun = self.library[code[1]]
-            args = []
-            for i in range(fun[0]):
-                args.insert(0, self.stack.pop())
-            res = fun[1](*args)
-            if res:
-                self.stack.append(res)
-        else:
-            pass
+
         pass
 
     def reset(self, code):
