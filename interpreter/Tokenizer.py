@@ -69,7 +69,7 @@ t_ID = r'\$[a-zA-Z0-9]+'
 
 def t_NUMBER(t):
     r"""\d+(\.\d+)?"""
-    t.value = int(t.value)
+    t.value = float(t.value)
     return t
 
 

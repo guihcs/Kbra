@@ -44,7 +44,7 @@ canvas = AppCanvas(frame)
 
 
 def run(event):
-    interpreter = Interpreter(canvas.functions)
+    interpreter = Interpreter(canvas.library)
     interpreter.start(editor.get_text())
     pass
 

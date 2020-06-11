@@ -1,6 +1,7 @@
 import unittest
 
 from interpreter.CodeBuilder import build_code
+import test_scripts.scripts_recursion as test_rec
 
 
 class TestExpression(unittest.TestCase):
@@ -82,21 +83,15 @@ class TestBranching(unittest.TestCase):
         for c, t in zip(result, correct_code):
             self.assertEqual(t, c)
 
-        # for i, c in zip(range(len(result)), result):
-        #     print(f'{i} : {c}')
-
 
 class TestLoop(unittest.TestCase):
     def test_while(self):
         script = """
-                    while $i < 0 {
+                    while $i < 3 {
                         $i = $i + 1
                     }
                         """
         result, dm = build_code(script)
-
-        # for i, c in zip(range(len(result)), result):
-        #     print(f'{i} : {c}')
 
     def test_repeat(self):
         script = """
@@ -134,8 +129,8 @@ class TestFunction(unittest.TestCase):
 class TestLearn(unittest.TestCase):
     def test_learn(self):
         script = """
-                    learn test $a, $b {
-                        $a = 1 + 1
+                    learn test $i, $b {
+                        $i = 1 + 1
                         $b = 2 
                         $c = 3                      
                     }
@@ -143,8 +138,10 @@ class TestLearn(unittest.TestCase):
                     $i = 0
                 """
         result, dm = build_code(script)
+
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
+
         pass
 
     def test_learn_call(self):
@@ -177,6 +174,15 @@ class TestComplexCode(unittest.TestCase):
         # for i, c in zip(range(len(result)), result):
         #     print(f'{i} : {c}')
         # pass
+
+    def test_recursion(self):
+        result, dm = build_code(test_rec.rec1)
+
+        self.assertEqual(1, len(dm['fac'][2]))
+        # for i, c in zip(range(len(result)), result):
+        #     print(f'{i} : {c}')
+        # pass
+        pass
 
 
 if __name__ == '__main__':

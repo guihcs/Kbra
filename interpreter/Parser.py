@@ -232,9 +232,12 @@ def p_function(p):
 def p_args(p):
     """args : args COMMA logic
             | logic
+            |
     """
 
-    if len(p) < 3:
+    if len(p) < 2:
+        pass
+    elif len(p) < 3:
         p[0] = p[1]
     else:
         p[0] = (p[1], p[3])

@@ -18,12 +18,21 @@ class Interpreter:
         self.functions = {
             'PUSH': self.push,
             'POP': self.pop,
-            'ADD': self.add,
-            'LT': self.lt,
             'JUMP': self.jump,
             'JUMPNOT': self.jump_not,
             'CALL': self.call,
-            'RET': self.ret
+            'RET': self.ret,
+            'ADD': self.add,
+            'MULT': self.mult,
+            'SUB': self.sub,
+            'DIV': self.div,
+            'GT': self.gt,
+            'LT': self.lt,
+            'LE': self.le,
+            'GE': self.ge,
+            'EQ': self.eq,
+            'NEQ': self.neq
+
         }
         self.library = {
             # 'message': (2, self.random),
@@ -37,8 +46,6 @@ class Interpreter:
     def start(self, script):
         result, dm = build_code(script)
         code = self.linker.link(result, dm)
-        # for i, c in zip(range(len(code)), code):
-        #     print(f'{i} : {c}')
         self.execute(code)
 
         pass
@@ -112,6 +119,7 @@ class Interpreter:
             args_address = self.stack_pointer - 1
             args = self.memory[args_address:args_address + code[3]]
             self.libs[code[2]](*args)
+
             pass
 
         pass
@@ -128,5 +136,64 @@ class Interpreter:
         self.jump((0, ret_address))
         pass
 
-    def reset(self, code):
+    def reset(self, _):
+        self.stack_pointer = 10
+        self.instruction_pointer = 0
+        self.libs['reset']()
+        pass
+
+    def mult(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 * v2
+        pass
+
+    def sub(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 - v2
+        pass
+
+    def div(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 // v2
+        pass
+
+    def gt(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 > v2
+        pass
+
+    def le(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 <= v2
+        pass
+
+    def ge(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 >= v2
+        pass
+
+    def eq(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 == v2
+        pass
+
+    def neq(self, _):
+        self.stack_pointer -= 1
+        v1 = self.memory[self.stack_pointer - 1]
+        v2 = self.memory[self.stack_pointer]
+        self.memory[self.stack_pointer - 1] = v1 != v2
         pass

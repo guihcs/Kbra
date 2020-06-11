@@ -1,5 +1,6 @@
 from math import sin, cos, radians
 from tkinter import *
+
 from PIL import Image, ImageTk
 
 
@@ -19,30 +20,30 @@ class AppCanvas(object):
         self.line_color = '#000000'
 
         self.library = {
-            'fw': (1, self.draw_line),
-            'bw': (1, lambda l: self.draw_line(-l)),
-            'tl': (1, self.turn),
-            'tr': (1, lambda a: self.turn(-a)),
-            'dir': (1, self.set_dir),
-            'getdir': (0, self.get_dir),
-            'center': (0, self.center),
-            'go': (2, self.set_pos),
-            'gx': (1, lambda x: self.set_pos(x, self.canvas['gety']())),
-            'gy': (1, lambda y: self.set_pos(self.canvas['gety'](), y)),
-            'getx': (0, self.get_current_x),
-            'gety': (0, self.get_current_y),
-            'pu': (0, self.set_draw(False)),
-            'pd': (0, self.set_draw(True)),
-            'pw': (1, self.set_line_width),
-            'pc': (3, self.set_line_color),
-            # 'cs': (2, self.canvas['pc']),
-            'cc': (3, self.set_bg),
-            'clear': (0, self.clear),
-            'reset': (0, self.reset),
-            # 'ss': (0, self.reset),
-            # 'sh': (0, self.reset),
-            'print': (1, self.draw_text),
-            # 'fontsize': (1, self.canvas['print']),
+            'fw': self.draw_line,
+            'bw': lambda l: self.draw_line(-l),
+            'tl': self.turn,
+            'tr': lambda a: self.turn(-a),
+            'dir': self.set_dir,
+            'getdir': self.get_dir,
+            'center': self.center,
+            'go': self.set_pos,
+            'gx': lambda x: self.set_pos(x, self.canvas['gety']()),
+            'gy': lambda y: self.set_pos(self.canvas['gety'](), y),
+            'getx': self.get_current_x,
+            'gety': self.get_current_y,
+            'pu': self.set_draw(False),
+            'pd': self.set_draw(True),
+            'pw': self.set_line_width,
+            'pc': self.set_line_color,
+            # 'cs': self.canvas['pc'],
+            'cc': self.set_bg,
+            'clear': self.clear,
+            'reset': self.reset,
+            # 'ss': self.reset,
+            # 'sh': self.reset,
+            'print': self.draw_text,
+            # 'fontsize': self.canvas['print'],
 
         }
 
@@ -56,11 +57,12 @@ class AppCanvas(object):
         #                              fill='green', tag='main')
 
         self.pilImage = Image.open("resources/Kbra.png")
-        self.pilImage = self.pilImage.resize((int(self.pilImage.width * 0.3), int(self.pilImage.height * 0.2)), Image.ANTIALIAS)
+        self.pilImage = self.pilImage.resize((int(self.pilImage.width * 0.3), int(self.pilImage.height * 0.2)),
+                                             Image.ANTIALIAS)
 
         self.spriteImage = ImageTk.PhotoImage(self.pilImage)
 
-        self.canvas.create_image(self.__cur_pos_x, self.__cur_pos_y, image= self.spriteImage, tag='main')
+        self.canvas.create_image(self.__cur_pos_x, self.__cur_pos_y, image=self.spriteImage, tag='main')
         pass
 
     # Returns the formatted direction
@@ -76,13 +78,13 @@ class AppCanvas(object):
     # def clear
     def clear(self):
         self.canvas.delete('all')
-        self.canvas.create_rectangle(20, 20, self.canvas.winfo_reqwidth() - 20, self.canvas.winfo_reqheight() - 20)
+        # self.canvas.create_rectangle(20, 20, self.canvas.winfo_reqwidth() - 20, self.canvas.winfo_reqheight() - 20)
 
-        # self.set_sprite_dir(self.__cur_dir)
+        self.set_sprite_dir(self.__cur_dir)
 
-        self.canvas.create_rectangle(self.__cur_pos_x - 10, self.__cur_pos_y - 10, self.__cur_pos_x + 10,
-                                     self.__cur_pos_y + 10,
-                                     fill='green', tag='main')
+        # self.canvas.create_rectangle(self.__cur_pos_x - 10, self.__cur_pos_y - 10, self.__cur_pos_x + 10,
+        #                              self.__cur_pos_y + 10,
+        #                              fill='green', tag='main')
 
     # set reset
     def reset(self):

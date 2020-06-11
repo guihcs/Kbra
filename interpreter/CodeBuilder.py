@@ -81,9 +81,13 @@ def build_learn(function, args, statements):
     def_label = label(f'def-{function}')
     append_code(('LABEL', def_label))
     build_statements(statements)
+    append_code(('RET', ))
     args_map = {}
-    for i, a in zip(range(len(args)), args):
-        args_map[a] = i
+    if type(args) is tuple:
+        for i, a in zip(range(len(args)), args):
+            args_map[a] = i
+    else:
+        args_map[args] = 0
     def_map[function] = [False, def_label, args_map, result_code]
     set_state(state)
     pass
@@ -226,10 +230,15 @@ def build_for(assign, expression, statements):
 
 def build_function_call(function_name, args):
     append_code(('PUSH', 'REGISTER', 0))
-    for arg in args:
-        build_expression(arg)
 
-    append_code(('CALL', function_name, len(args)))
+    if args:
+        for arg in args:
+            build_expression(arg)
+        arg_count = len(args)
+    else:
+        arg_count = 0
+
+    append_code(('CALL', function_name, arg_count))
     pass
 
 
