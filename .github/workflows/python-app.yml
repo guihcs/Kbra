@@ -24,6 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8
+        ls $GITHUB_WORKSPACE
         pip install -r ${{ format('{0}/requirements.txt', github.workspace) }} 
     - name: Lint with flake8
       run: |
