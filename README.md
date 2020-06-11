@@ -19,3 +19,22 @@ After download of the project. Run the installation of dependencies:
 To run the application execute:
 
 ``` python3 Main.py ```
+
+# Getting Started
+
+Test your first script:
+
+```
+reset()
+
+$i = 0
+
+while $i < 4 {
+  fw(100)
+  tr(90)
+  $i = $i + 1
+}
+
+```
+
+And then click run to see the result.
