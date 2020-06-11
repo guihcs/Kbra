@@ -87,7 +87,8 @@ class Editor(object):
         for i in range(len(textlines)):
             if '#' in textlines[i]:
                 line = re.match(r"^.+?(?=#)", textlines[i])
-                if line is None: continue
+                if line is None:
+                    continue
                 line = line.group()
             else:
                 line = textlines[i]
