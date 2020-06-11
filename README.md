@@ -12,6 +12,6 @@ After download of the project. Run the installation of dependencies:
 
 ``` python3 -m pip install -r requeriments.txt ```
 
-To execute:
+To run the application execute:
 
 ``` python3 Main.py ```
