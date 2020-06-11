@@ -60,7 +60,7 @@ def p_declarations(_):
     pass
 
 
-def p_statements(p):
+def p_statements():
     """statements : NL statements
                   | assignment declarations
                   | branching declarations

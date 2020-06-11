@@ -4,6 +4,14 @@ from tkinter import *
 from PIL import Image, ImageTk
 
 
+def rgb_to_hex(b, g, r):
+    r_hex = hex(r)[2:].upper().rjust(2, '0')
+    g_hex = hex(g)[2:].upper().rjust(2, '0')
+    b_hex = hex(b)[2:].upper().rjust(2, '0')
+    color = '#%s%s%s' % (r_hex, g_hex, b_hex)
+    return color
+
+
 class AppCanvas(object):
     def __init__(self, root):
         self.pilImage = None
@@ -50,12 +58,6 @@ class AppCanvas(object):
         self.canvas = Canvas(root, width=self.__canv_width, height=self.__canv_height, bg='white', borderwidth=2,
                              highlightthickness=5, cursor='X_cursor', relief='groove')
 
-        # self.canvas.create_rectangle(20, 20, self.canvas.winfo_reqwidth() - 20, self.canvas.winfo_reqheight() - 20)
-        #
-        # self.canvas.create_rectangle(self.__cur_pos_x - 10, self.__cur_pos_y - 10, self.__cur_pos_x + 10,
-        #                              self.__cur_pos_y + 10,
-        #                              fill='green', tag='main')
-
         self.pilImage = Image.open("resources/Kbra.png")
         self.pilImage = self.pilImage.resize((int(self.pilImage.width * 0.3), int(self.pilImage.height * 0.2)),
                                              Image.ANTIALIAS)
@@ -65,7 +67,6 @@ class AppCanvas(object):
         self.canvas.create_image(self.__cur_pos_x, self.__cur_pos_y, image=self.spriteImage, tag='main')
         pass
 
-    # Returns the formatted direction
     def get_dir(self):
         _dir = 90 - self.__cur_dir
         if not (_dir < 360) or not (_dir > 0) and not (_dir > -360):
@@ -75,34 +76,21 @@ class AppCanvas(object):
         else:
             return _dir
 
-    # def clear
     def clear(self):
         self.canvas.delete('all')
-        # self.canvas.create_rectangle(20, 20, self.canvas.winfo_reqwidth() - 20, self.canvas.winfo_reqheight() - 20)
-
         self.set_sprite_dir(self.__cur_dir)
 
-        # self.canvas.create_rectangle(self.__cur_pos_x - 10, self.__cur_pos_y - 10, self.__cur_pos_x + 10,
-        #                              self.__cur_pos_y + 10,
-        #                              fill='green', tag='main')
-
-    # set reset
     def reset(self):
         self.set_dir(0)
         self.center()
         self.clear()
 
-    # Place the pointer in the middle
     def center(self):
         self.__cur_pos_x = self.start_posx
         self.__cur_pos_y = self.start_posy
 
     def set_bg(self, r, g, b):
-        r_hex = hex(r)[2:].upper().rjust(2, '0')
-        g_hex = hex(g)[2:].upper().rjust(2, '0')
-        b_hex = hex(b)[2:].upper().rjust(2, '0')
-
-        color = '#%s%s%s' % (r_hex, g_hex, b_hex)
+        color = rgb_to_hex(b, g, r)
         self.canvas['bg'] = color
 
     def get_current_x(self):
@@ -111,7 +99,6 @@ class AppCanvas(object):
     def get_current_y(self):
         return self.__cur_pos_y
 
-    # Set current pos
     def set_pos(self, x, y):
 
         move_x = x - self.__cur_pos_x
@@ -127,16 +114,14 @@ class AppCanvas(object):
 
         self.spriteImage = ImageTk.PhotoImage(img)
         self.canvas.create_image(self.__cur_pos_x, self.__cur_pos_y, image=self.spriteImage, tag='main')
-        # self.canvas.update()
+
         pass
 
-    # set current direction
     def set_dir(self, _dir):
         self.__cur_dir = 90 - _dir
-        # self.set_sprite_dir(self.__cur_dir)
+        self.set_sprite_dir(self.__cur_dir)
         pass
 
-    # Turn left with the angle _dir
     def turn(self, _dir):
         self.__cur_dir = self.__cur_dir + _dir
         self.set_sprite_dir(self.__cur_dir)
@@ -145,11 +130,7 @@ class AppCanvas(object):
         self.line_width = width[0]
 
     def set_line_color(self, r, g, b):
-        r_hex = hex(r)[2:].upper().rjust(2, '0')
-        g_hex = hex(g)[2:].upper().rjust(2, '0')
-        b_hex = hex(b)[2:].upper().rjust(2, '0')
-
-        color = '#%s%s%s' % (r_hex, g_hex, b_hex)
+        color = rgb_to_hex(b, g, r)
         self.line_color = color
 
         pass
@@ -167,7 +148,6 @@ class AppCanvas(object):
         self.canvas.create_text(self.__cur_pos_x, self.__cur_pos_y, text=text,
                                 fill=self.line_color, font=('Arial', width), anchor=W)
 
-    # Draw a line using the current directio
     def draw_line(self, length):
         vec_dir_x = cos(radians(self.__cur_dir))
         vec_dir_y = sin(radians(self.__cur_dir))

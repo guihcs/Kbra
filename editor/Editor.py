@@ -1,4 +1,3 @@
-import re
 from threading import Thread
 from tkinter import *
 
@@ -25,36 +24,7 @@ class EditorThread(Thread):
 
                 textlines = self.editor.get('1.0', END + '-1c').splitlines()
 
-                # check for keywords
-                for i in range(len(textlines)):
-                    find = re.finditer(r"\b(%s|%s)\b" % (self.keywords, self.funcs), textlines[i])
-                    for match in find:
-                        span = match.span()
-                        self.editor.tag_add('key', '%d.%d' % (i + 1, span[0]), '%d.%d' % (i + 1, span[1]))
-                        pass
-
-                # light comments
-                for i in range(len(textlines)):
-                    find = re.finditer(r"(?=#).+", textlines[i])
-                    for match in find:
-                        span = match.span()
-                        self.editor.tag_add('com', '%d.%d' % (i + 1, span[0]), '%d.%d' % (i + 1, span[1]))
-                        pass
-
-                # remove all other
-                for i in range(len(textlines)):
-                    if '#' in textlines[i]:
-                        line = re.match(r"^.+?(?=#)", textlines[i])
-                        if line is None: continue
-                        line = line.group()
-                    else:
-                        line = textlines[i]
-                    find = re.finditer(r"(?!(%s|%s)\b)\b\w+" % (self.keywords, self.funcs), line)
-                    for match in find:
-                        span = match.span()
-                        self.editor.tag_remove('key', '%d.%d' % (i + 1, span[0]), '%d.%d' % (i + 1, span[1]))
-                        self.editor.tag_remove('com', '%d.%d' % (i + 1, span[0]), '%d.%d' % (i + 1, span[1]))
-                        pass
+                self.editor.method_name(textlines)
 
             pass
         pass
@@ -97,13 +67,15 @@ class Editor(object):
         textlines = self.get_text().splitlines()
 
         # check for keywords
+        self.method_name(textlines)
+
+    def method_name(self, textlines):
         for i in range(len(textlines)):
             find = re.finditer(r"\b(%s|%s)\b" % (self.keywords, self.funcs), textlines[i])
             for match in find:
                 span = match.span()
                 self.editor.tag_add('key', '%d.%d' % (i + 1, span[0]), '%d.%d' % (i + 1, span[1]))
                 pass
-
         # light comments
         for i in range(len(textlines)):
             find = re.finditer(r"(?=#).+", textlines[i])
@@ -111,7 +83,6 @@ class Editor(object):
                 span = match.span()
                 self.editor.tag_add('com', '%d.%d' % (i + 1, span[0]), '%d.%d' % (i + 1, span[1]))
                 pass
-
         # remove all other
         for i in range(len(textlines)):
             if '#' in textlines[i]:

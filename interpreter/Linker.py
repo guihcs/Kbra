@@ -1,3 +1,48 @@
+def link_definition(code, args):
+    result_code = []
+    symbol_table = {}
+    current_symbol = 0
+    for line in code:
+        if line[0] == 'PUSH' and line[1] == 'ID':
+            if line[2] in args:
+                result_code.append(('PUSH', 'ARG', args[line[2]]))
+            else:
+                if line[2] not in symbol_table:
+                    symbol_table[line[2]] = current_symbol
+                    current_symbol += 1
+                result_code.append(('PUSH', 'LOCAL', symbol_table[line[2]]))
+        elif line[0] == 'POP':
+            if line[2] in args:
+                result_code.append(('POP', 'ARG', args[line[2]]))
+            else:
+                if line[2] not in symbol_table:
+                    symbol_table[line[2]] = current_symbol
+                    current_symbol += 1
+                result_code.append(('POP', 'LOCAL', symbol_table[line[2]]))
+        else:
+            result_code.append(line)
+
+    return result_code, current_symbol
+
+
+def resolve_dependencies(code, definitions):
+    resolved_code = []
+    code.insert(0, ('LABEL', '#_main'))
+    for line in code:
+        if line[0] == 'CALL' and line[1] in definitions and not definitions[line[1]][0]:
+            f_def = definitions[line[1]]
+            linked_definition, locals_count = link_definition(f_def[3], f_def[2])
+            resolved_code = linked_definition + resolved_code
+            definitions[line[1]][0] = True
+            definitions[line[1]].append(locals_count)
+
+        resolved_code.append(line)
+
+    resolved_code.insert(0, ('JUMP', '#_main'))
+
+    return resolved_code
+
+
 class Linker:
     def __init__(self):
         self.definitions = {}
@@ -16,7 +61,7 @@ class Linker:
             'JUMPNOT': self.link_jump
         }
 
-        resolved_code = self.resolve_dependencies(code, definitions)
+        resolved_code = resolve_dependencies(code, definitions)
         resolved_code = self.resolve_labels(resolved_code)
 
         for line in resolved_code:
@@ -40,49 +85,6 @@ class Linker:
             pass
         return result
         pass
-
-    def resolve_dependencies(self, code, definitions):
-        resolved_code = []
-        code.insert(0, ('LABEL', '#_main'))
-        for line in code:
-            if line[0] == 'CALL' and line[1] in definitions and not definitions[line[1]][0]:
-                f_def = definitions[line[1]]
-                linked_definition, locals_count = self.link_definition(f_def[3], f_def[2])
-                resolved_code = linked_definition + resolved_code
-                definitions[line[1]][0] = True
-                definitions[line[1]].append(locals_count)
-
-            resolved_code.append(line)
-
-        resolved_code.insert(0, ('JUMP', '#_main'))
-
-        return resolved_code
-
-    def link_definition(self, code, args):
-        result_code = []
-        symbol_table = {}
-        current_symbol = 0
-        for line in code:
-            if line[0] == 'PUSH' and line[1] == 'ID':
-                if line[2] in args:
-                    result_code.append(('PUSH', 'ARG', args[line[2]]))
-                else:
-                    if line[2] not in symbol_table:
-                        symbol_table[line[2]] = current_symbol
-                        current_symbol += 1
-                    result_code.append(('PUSH', 'LOCAL', symbol_table[line[2]]))
-            elif line[0] == 'POP':
-                if line[2] in args:
-                    result_code.append(('POP', 'ARG', args[line[2]]))
-                else:
-                    if line[2] not in symbol_table:
-                        symbol_table[line[2]] = current_symbol
-                        current_symbol += 1
-                    result_code.append(('POP', 'LOCAL', symbol_table[line[2]]))
-            else:
-                result_code.append(line)
-
-        return result_code, current_symbol
 
     def link_push(self, line):
         if line[1] == 'ID':

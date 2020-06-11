@@ -19,7 +19,5 @@ class TestTokenizer(unittest.TestCase):
         lexer.input(script)
 
 
-
-
 if __name__ == '__main__':
     unittest.main()

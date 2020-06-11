@@ -83,7 +83,7 @@ def build_learn(function, args, statements):
     build_statements(statements)
     append_code(('RET', ))
     args_map = {}
-    if type(args) is tuple:
+    if isinstance(args, tuple):
         for i, a in zip(range(len(args)), args):
             args_map[a] = i
     else:
@@ -113,7 +113,7 @@ def flat_tuple(t):
 
 
 def build_expression(expression):
-    expression = flat_tuple(expression) if type(expression[0]) is tuple else (expression,)
+    expression = flat_tuple(expression) if isinstance(expression[0], tuple) else (expression,)
 
     for term in expression:
         if term[0] == 'CONSTANT':

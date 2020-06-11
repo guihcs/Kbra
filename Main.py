@@ -9,13 +9,13 @@ window.wm_title('Kbra Project')
 window.resizable(0, 0)
 
 
-def keyDown(e):
+def keyDown():
     # editor_thread.isPressing = True
 
     pass
 
 
-def keyUp(e):
+def keyUp():
     # editor_thread.isPressing = False
     editor.color()
     pass
@@ -43,7 +43,7 @@ editor_thread = EditorThread(editor.editor)
 canvas = AppCanvas(frame)
 
 
-def run(event):
+def run():
     interpreter = Interpreter(canvas.library)
     interpreter.start(editor.get_text())
     pass
